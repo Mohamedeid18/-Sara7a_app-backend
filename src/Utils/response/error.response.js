@@ -1,5 +1,7 @@
 //throw new Error
 
+import { NODE_ENV } from "../../config/configService.js";
+
 export const errorResponse = ({status = 400, message = "Error",extra = undefined}) => {
     const error = new Error(typeof message === "string" ? message : message?.message);
     error.status = status;
@@ -37,5 +39,5 @@ export const internalServerException = (message = "Internal Server Error", extra
 
 export const globalErrorHandler = (err, req, res, next) => {
     const status = err.status ?? 500;
-    res.status(status).json({ message: err.message, stack: err.stack, status });
+    res.status(status).json({ message: err.message, stack: NODE_ENV === 'development' ? err.stack : undefined, status });
 };

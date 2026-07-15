@@ -2,8 +2,9 @@ import connectDB from './DB/connection.js'
 import {authRouter,messageRouter,userRouter} from './modules/index.js'
 import { globalErrorHandler, notFoundException } from "./Utils/response/error.response.js"
 import { successResponse } from "./Utils/response/success.response.js"
+import cors from "cors"
 export  const bootstrap = async (app,express) => {
-    app.use(express.json())
+    app.use(express.json(), cors())
     await connectDB();
 
     app.get('/', (req, res) => successResponse({res, message: 'Welcome to the API'}))

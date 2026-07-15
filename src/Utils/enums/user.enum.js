@@ -16,3 +16,11 @@ export const ProviderEnum = {
     GOOGLE: '1',
     FACEBOOK: '2'
 }
+export const SignatureEnum = {
+    USER:'0',
+    ADMIN:'1'
+}
+export const TokenTypeEnum = {
+    ACCESS: '0',
+    REFRESH: '1'
+}
