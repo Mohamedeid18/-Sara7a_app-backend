@@ -24,3 +24,5 @@ export const ACCESS_SECRET_ADMIN_TOKEN = process.env.ACCESS_SECRET_ADMIN_TOKEN
 export const REFRESH_SECRET_ADMIN_TOKEN = process.env.REFRESH_SECRET_ADMIN_TOKEN
 export const ACCESS_ADMIN_EXPIRES_IN = process.env.ACCESS_ADMIN_EXPIRES_IN
 export const REFRESH_ADMIN_EXPIRES_IN = process.env.REFRESH_ADMIN_EXPIRES_IN
+// Google
+export const CLIENT_ID = process.env.CLIENT_ID
