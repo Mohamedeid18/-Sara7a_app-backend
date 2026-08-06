@@ -1,14 +1,16 @@
+import helmet from 'helmet'
 import connectDB from './DB/connection.js'
 import {authRouter,messageRouter,userRouter} from './modules/index.js'
 import { globalErrorHandler, notFoundException } from "./Utils/response/error.response.js"
 import { successResponse } from "./Utils/response/success.response.js"
 import cors from "cors"
+import path from 'node:path'
 export  const bootstrap = async (app,express) => {
-    app.use(express.json(), cors())
+    app.use(express.json(), cors(),helmet())
     await connectDB();
 
     app.get('/', (req, res) => successResponse({res, message: 'Welcome to the API'}))
-
+    app.use("/uploads", express.static(path.resolve('./src/uploads')))
     app.use('/api/v1/auth', authRouter)
     app.use('/api/v1/user', userRouter)
     app.use('/api/v1/message', messageRouter)

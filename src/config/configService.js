@@ -26,3 +26,5 @@ export const ACCESS_ADMIN_EXPIRES_IN = process.env.ACCESS_ADMIN_EXPIRES_IN
 export const REFRESH_ADMIN_EXPIRES_IN = process.env.REFRESH_ADMIN_EXPIRES_IN
 // Google
 export const CLIENT_ID = process.env.CLIENT_ID
+// White List
+export const WHITE_LIST = process.env.WHITE_LIST
