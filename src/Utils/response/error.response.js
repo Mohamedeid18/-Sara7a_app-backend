@@ -39,5 +39,5 @@ export const internalServerException = (message = "Internal Server Error", extra
 
 export const globalErrorHandler = (err, req, res, next) => {
     const status = err.status ?? 500;
-    res.status(status).json({ message: err.message, stack: NODE_ENV === 'development' ? err.stack : undefined, status });
+    res.status(status).json({ message: err.message, stack: NODE_ENV === 'development' ? err.stack : undefined, status ,extra: err.extra });
 };
