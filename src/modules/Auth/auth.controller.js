@@ -9,6 +9,9 @@ const router = Router();
 
 router.post('/signup', validation(authValidate.signupSchema), authServices.signup);
 router.post('/login', validation(authValidate.loginSchema), authServices.login);
+router.patch('/confirm-email', validation(authValidate.confirmEmailSchema), authServices.confirmEmail);
+router.patch('/forget-password', validation(authValidate.forgetPasswordSchema), authServices.forgetPassword);
+router.patch('/reset-password', validation(authValidate.resetPasswordSchema), authServices.resetPassword);
 router.post('/refresh-token',authenticateToken({tokenType:TokenTypeEnum.REFRESH}),authServices.refreshToken);
 //remember me 
 // router.post('/remember-me', authenticateToken({tokenType: TokenTypeEnum.ACCESS}), authServices.rememberMe);

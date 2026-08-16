@@ -1,7 +1,7 @@
 import { findById, findOne } from "../DB/database.repository.js";
 import TokenModel from "../DB/Models/token.model.js";
 import UserModel from "../DB/Models/user.model.js";
-import { SignatureEnum, TokenTypeEnum } from "../Utils/enums/user.enum.js";
+import { SignatureEnum, TokenTypeEnum, RoleEnum } from "../Utils/enums/user.enum.js";
 import { forbiddenException, notFoundException, unauthorizedException } from "../Utils/response/error.response.js";
 import { getSignature, verifyToken } from "../Utils/tokens/token.js";
 

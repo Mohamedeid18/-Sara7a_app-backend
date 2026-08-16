@@ -28,3 +28,6 @@ export const REFRESH_ADMIN_EXPIRES_IN = process.env.REFRESH_ADMIN_EXPIRES_IN
 export const CLIENT_ID = process.env.CLIENT_ID
 // White List
 export const WHITE_LIST = process.env.WHITE_LIST
+// email
+export const USER_EMAIL = process.env.USER_EMAIL
+export const USER_PASS = process.env.USER_PASS

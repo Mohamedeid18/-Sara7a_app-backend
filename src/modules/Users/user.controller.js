@@ -6,6 +6,8 @@ import {
 } from "../../middleware/authentication.middleware.js";
 import { RoleEnum, TokenTypeEnum } from "../../Utils/enums/user.enum.js";
 import { fileValidation, localFileUpload } from "./../../Utils/multer/local.multer.js";
+import { validation } from "../../middleware/validation.middleware.js";
+import * as uservalidate from "./user.validation.js";
 
 const router = Router();
 
@@ -28,6 +30,13 @@ router.patch(
   authorization({ accessRoles: [RoleEnum.USER, RoleEnum.ADMIN] }),
   localFileUpload({ customDestination: "User", validation: [...fileValidation.images] }).array("attachments", 5),
   userServices.getCoverImages,
+);
+router.patch(
+  "/upload-password",
+  authenticateToken({ tokenType: TokenTypeEnum.ACCESS }),
+  authorization({ accessRoles: [RoleEnum.USER, RoleEnum.ADMIN] }),
+  validation(uservalidate.updatePasswordSchema),
+  userServices.updatePassword,
 );
 
 export default router;

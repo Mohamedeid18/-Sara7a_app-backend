@@ -25,3 +25,25 @@ export const loginSchema = {
     password: generalField.password.required()
 })
 }
+export const confirmEmailSchema = {
+    body:joi.object({
+    email: generalField.email.required(),
+    otp: joi.string().pattern(/^\d{6}$/).required()
+})
+}
+
+export const forgetPasswordSchema = {
+    body:joi.object({
+    email: generalField.email.required()
+})
+}
+export const resetPasswordSchema = {
+    body:joi.object({
+    email: generalField.email.required(),
+    otp: joi.string().pattern(/^\d{6}$/).required(),
+    newPassword: generalField.password.required(),
+    confirmPassword: joi.string().valid(joi.ref('newPassword')).messages({
+                'any.only': 'Passwords do not match'
+            })
+})
+}
