@@ -26,10 +26,10 @@ export const signup = async (req, res) => {
   if (await findOne({ model: UserModel, filter: { email } })) {
     throw conflictException({ message: "User already exists" });
   }
-  const opt = await generateOTP();
+  const { otp, otpExpires } = generateOTP();
   //hash OTP 
   const hashOTP = await generateHash({
-    plainText: opt,
+    plainText: otp,
     algorithm: HASH_ENUM.ARGON2,
   });
   //hash password
@@ -40,13 +40,13 @@ export const signup = async (req, res) => {
   const encryptedPhone = await encrypt(phone);
   const user = await create({
     model: UserModel,
-    data: [{ userName, email, password: hashPassword, phone: encryptedPhone, confirmEmailOTP: hashOTP }],
+    data: [{ userName, email, password: hashPassword, phone: encryptedPhone, confirmEmailOTP: hashOTP, confirmEmailOTPExpires: otpExpires }],
   });
 
   //emit confirmEmail event
   emailEvent.emit("confirmEmail", {
     to:email,
-    otp: opt,
+    otp: otp,
     userName: userName
   });
 
@@ -66,6 +66,9 @@ export const confirmEmail = async (req, res) => {
   if (!user) {
     throw conflictException({ message: "user not found" });
   }
+  if (user.confirmEmailOTPExpires < new Date()) {
+    throw badRequestException({ message: "OTP has expired. Please request a new one." });
+  }
   const isMatch = await compareHash({
     plainText: otp,
     cipherText: user.confirmEmailOTP,
@@ -78,7 +81,7 @@ export const confirmEmail = async (req, res) => {
     model: UserModel,
     filter: { email },
     update: { confirmEmail: Date.now() ,
-      $unset: { confirmEmailOTP: true}
+      $unset: { confirmEmailOTP: true, confirmEmailOTPExpires: true }
      },
   });
   successResponse({
@@ -216,7 +219,7 @@ export const logout = async (req, res) => {
 };
 export const forgetPassword = async (req, res) => {
   const { email } = req.body;
-  const otp = generateOTP();
+  const { otp, otpExpires } = generateOTP();
   const hashOtp = await generateHash({
     plainText: otp,
     algorithm: HASH_ENUM.ARGON2
@@ -224,7 +227,7 @@ export const forgetPassword = async (req, res) => {
   const user = await findOneAndUpdate({
     model: UserModel,
     filter: { email , confirmEmail: {$exists: true},provider: ProviderEnum.SYSTEM },
-    update:{ forgetPasswordOTP: hashOtp }
+    update:{ forgetPasswordOTP: hashOtp, forgetPasswordOTPExpires: otpExpires }
   });
   if(!user) {
     throw notFoundException({ message: "User not found" });
@@ -252,6 +255,9 @@ export const resetPassword = async (req, res) => {
   if(!user) {
     throw notFoundException({ message: "User not found" });
   }
+  if (user.forgetPasswordOTPExpires < new Date()) {
+    throw badRequestException({ message: "OTP has expired. Please request a new one." });
+  }
   const isValidOtp = await compareHash({
     plainText:otp,
     cipherText: user.forgetPasswordOTP,
@@ -267,12 +273,65 @@ export const resetPassword = async (req, res) => {
   await findOneAndUpdate({
     model: UserModel,
     filter: { email },
-    update: { password: hashPassword,  $unset: { forgetPasswordOTP: true } }
+    update: { password: hashPassword,  $unset: { forgetPasswordOTP: true , forgetPasswordOTPExpires: true } }
   });
   successResponse({
     res,
     message: "Password reset successfully"
   });
 };
-// expire: Time OTP .--- > 5min
 // Api Resend otp
+export const resendOTP = async (req, res) => {
+  const { email, type } = req.body; 
+
+  const user = await findOne({ model: UserModel, filter: { email } });
+  if (!user) {
+    throw notFoundException({ message: "User not found" });
+  }
+
+  const { otp, otpExpires } = generateOTP();
+  const hashOtp = await generateHash({
+    plainText: otp,
+    algorithm: HASH_ENUM.ARGON2,
+  });
+
+  if (type === "CONFIRM_EMAIL") {
+    if (user.confirmEmail) {
+      throw badRequestException({ message: "Email is already confirmed" });
+    }
+
+    await findOneAndUpdate({
+      model: UserModel,
+      filter: { email  ,confirmEmail: { $exists: true } ,confirmEmailOTP: { $exists: false } },
+      update: {
+        confirmEmailOTP: hashOtp,
+        confirmEmailOTPExpires: otpExpires,
+      },
+    });
+
+    emailEvent.emit("confirmEmail", { to: email, otp, userName: user.userName });
+
+  } else if (type === "FORGET_PASSWORD") {
+    if(!user.confirmEmail) {
+      throw badRequestException({ message: "Please confirm your email first" });
+    }
+    await findOneAndUpdate({
+      model: UserModel,
+      filter: { email , provider: ProviderEnum.SYSTEM ,confirmEmail: { $exists: true } },
+      update: {
+        forgetPasswordOTP: hashOtp,
+        forgetPasswordOTPExpires: otpExpires,
+      },
+    });
+
+    emailEvent.emit("forgetPassword", { to: email, otp, userName: user.userName });
+
+  } else {
+    throw badRequestException({ message: "Invalid resend type" });
+  }
+
+  return successResponse({
+    res,
+    message: "OTP resent successfully",
+  });
+};

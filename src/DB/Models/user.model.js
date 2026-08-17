@@ -44,7 +44,9 @@ const userSchema = new mongoose.Schema({
   },
   confirmEmail:Date,
   confirmEmailOTP:String,
+  confirmEmailOTPExpires:Date,
   forgetPasswordOTP:String,
+  forgetPasswordOTPExpires:Date,
   profileImage:String,
   coverImages:[String],
   changeCredentialsTime:Date

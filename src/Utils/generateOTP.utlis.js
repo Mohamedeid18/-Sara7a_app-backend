@@ -1,3 +1,8 @@
+import { randomInt } from "node:crypto";
+
 export const generateOTP = () => {
-  return Math.floor( Math.random() * 900000 + 100000 ).toString();
+  const otp = randomInt(100000, 999999).toString();
+  const otpExpires = new Date(Date.now() + 5 * 60 * 1000); 
+
+  return { otp, otpExpires };
 };

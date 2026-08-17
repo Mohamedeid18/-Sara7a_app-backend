@@ -47,3 +47,9 @@ export const resetPasswordSchema = {
             })
 })
 }
+export const resendOTPSchema = {
+    body:joi.object({
+    email: generalField.email.required(),
+    type: joi.string().valid("CONFIRM_EMAIL", "FORGET_PASSWORD").required()
+})
+}
