@@ -1,14 +1,15 @@
 import mongoose from "mongoose";
-import { DB_URL } from "../config/configService.js";
+import { DB_URI} from "../config/configService.js";
+import chalk from "chalk";
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(DB_URL, {
+    await mongoose.connect(DB_URI, {
       serverSelectionTimeoutMS: 5000
     });
-    console.log("Connected to MongoDB successfully");
+    console.log(chalk.bgRgb(0, 170, 0)(`Connected to MongoDB successfully`));
   } catch (error) {
-    console.error("connected to MongoDB Failed:", error);
+    console.error(chalk.bgRgb(255, 0, 0)(`Failed to connect to MongoDB: ${error.message}`));
   }
 };
 

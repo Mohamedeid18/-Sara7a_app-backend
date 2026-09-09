@@ -22,7 +22,7 @@ import { emailEvent } from "../../Utils/events/email.event.js";
 
 
 export const signup = async (req, res) => {
-  const { userName, email, password, phone } = req.body;
+  const { userName, email, password, phone, gender } = req.body;
   if (await findOne({ model: UserModel, filter: { email } })) {
     throw conflictException({ message: "User already exists" });
   }
@@ -40,7 +40,7 @@ export const signup = async (req, res) => {
   const encryptedPhone = await encrypt(phone);
   const user = await create({
     model: UserModel,
-    data: [{ userName, email, password: hashPassword, phone: encryptedPhone, confirmEmailOTP: hashOTP, confirmEmailOTPExpires: otpExpires }],
+    data: [{ userName, email, password: hashPassword, phone: encryptedPhone, confirmEmailOTP: hashOTP, confirmEmailOTPExpires: otpExpires, gender }],
   });
 
   //emit confirmEmail event
@@ -141,7 +141,7 @@ const verifyGoogle = async ({ idToken }) => {
 };
 export const socialLogin = async (req, res) => {
   const { idToken } = req.body;
-  const { email, email_verified, given_name, family_name, picture } =
+  const { email, email_verified, given_name, family_name, picture  } =
     await verifyGoogle({ idToken });
   if (!email_verified) {
     throw conflictException({ message: "Email not verified" });
@@ -167,7 +167,7 @@ export const socialLogin = async (req, res) => {
           firstName: given_name,
           lastName: family_name,
           provider: ProviderEnum.GOOGLE,
-          profileImage: picture,
+          profileImage: { secure_url: picture, public_id: `google_${Date.now()}` },
         },
       ],
     });

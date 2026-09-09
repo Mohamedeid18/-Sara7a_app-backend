@@ -1,4 +1,4 @@
-import joi from "joi";    
+import joi from "joi"; 
 import { Types } from "mongoose";
 import { GenderEnum, ProviderEnum, RoleEnum } from "../../Utils/enums/user.enum.js";
 import { generalField } from "../../middleware/validation.middleware.js";

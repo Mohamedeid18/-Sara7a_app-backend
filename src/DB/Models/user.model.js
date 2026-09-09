@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { GenderEnum, ProviderEnum, RoleEnum } from "../../Utils/enums/user.enum.js";
+import { defaultProfileImage } from "../../Utils/assets/defualtProfileImage.js";
 
 const userSchema = new mongoose.Schema({
   firstName: {
@@ -47,9 +48,22 @@ const userSchema = new mongoose.Schema({
   confirmEmailOTPExpires:Date,
   forgetPasswordOTP:String,
   forgetPasswordOTPExpires:Date,
-  profileImage:String,
+  profileImage:{
+    secure_url: String,
+    public_id: String
+  },
   coverImages:[String],
-  changeCredentialsTime:Date
+  changeCredentialsTime:Date,
+  freezeBy:{type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+  freezeAt:Date,
+  freezeByRole:{
+    type:String,
+    enum:Object.values(RoleEnum)
+  },
+  restoredBy:{type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+  restoredAt:Date,
+
+
 },{timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true }});
 
 userSchema.virtual('userName').set(function(value) {
@@ -57,6 +71,13 @@ userSchema.virtual('userName').set(function(value) {
   this.set({ firstName, lastName });
 }).get(function() {
   return `${this.firstName} ${this.lastName}`;
+});
+
+userSchema.pre("save", async function () {
+  if (!this.profileImage || !this.profileImage.secure_url) {
+    const { secure_url, public_id } = defaultProfileImage(this.gender);
+    this.profileImage = { secure_url, public_id };
+  }
 });
 
 const UserModel = mongoose.model('User', userSchema);

@@ -10,7 +10,7 @@ export const generalField = {
         email: joi.string().email({
             minDomainSegments:2,
             maxDomainSegments:5,
-            tlds:{allow:["com", "net", "org"]}
+            tlds:{allow:["com", "net", "org", "eg"]}
         }),
         password: joi.string().alphanum().messages({
             'any.required': 'Password is required',
