@@ -20,9 +20,8 @@ export async function sendEmail({ to,html,subject,text,cc,bcc,attachments}) {
       bcc,
       attachments
     });
-    console.log(`send email ${info.messageId}`)
   } catch (error) {
-    console.log(`Error while sending Email:${error}`)
+    console.error(`Error while sending Email:${error}`)
   }
 }
 export const emailSubject = {

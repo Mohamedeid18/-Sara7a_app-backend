@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { RoleEnum, SignatureEnum } from "../enums/user.enum.js";
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuid } from "uuid";
 export const generateToken = ({ payload, secret, options }) => {
   return jwt.sign(payload, secret, options);
 };
@@ -44,16 +44,16 @@ export const getNewLoginCredentials = async (user) => {
     signatureLevel:
       user.role !== RoleEnum.ADMIN ? SignatureEnum.USER : SignatureEnum.ADMIN,
   });
-  const jwtId = uuidv4();
+  const jwtid = uuid();
   const accessToken = generateToken({
     payload: { id: user._id },
     secret: signature.accessSignature,
-    options: { expiresIn: Number(signature.expiresIn), jwtid: jwtId },
+    options: { expiresIn: Number(signature.expiresIn), jwtid },
   });
   const refreshToken = generateToken({
     payload: { id: user._id },
     secret: signature.refreshSignature,
-    options: { expiresIn: Number(signature.refreshExpiresIn), jwtid: jwtId },
+    options: { expiresIn: Number(signature.refreshExpiresIn), jwtid },
   });
 
   return { accessToken, refreshToken };

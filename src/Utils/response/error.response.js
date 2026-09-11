@@ -1,4 +1,3 @@
-//throw new Error
 
 import { NODE_ENV } from "../../config/configService.js";
 
@@ -29,7 +28,7 @@ export const conflictException = (message = "Conflict", extra = undefined) => {
     return errorResponse({ status: 409, message, extra });
 };
 
-export const toManyException = (message = "Too Many Requests", extra = undefined) => {
+export const toManyRequestsException = (message = "Too Many Requests", extra = undefined) => {
     return errorResponse({ status: 429, message, extra });
 };
 

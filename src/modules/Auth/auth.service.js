@@ -19,6 +19,7 @@ import { LogoutTypeEnum, ProviderEnum } from "../../Utils/enums/user.enum.js";
 import TokenModel from "../../DB/Models/token.model.js";
 import { generateOTP } from "../../Utils/generateOTP.utlis.js";
 import { emailEvent } from "../../Utils/events/email.event.js";
+import { revokeToken, setKey } from "../../DB/redis.service.js";
 
 
 export const signup = async (req, res) => {
@@ -27,12 +28,10 @@ export const signup = async (req, res) => {
     throw conflictException({ message: "User already exists" });
   }
   const { otp, otpExpires } = generateOTP();
-  //hash OTP 
   const hashOTP = await generateHash({
     plainText: otp,
     algorithm: HASH_ENUM.ARGON2,
   });
-  //hash password
   const hashPassword = await generateHash({
     plainText: password,
     algorithm: HASH_ENUM.BCRYPT,
@@ -43,7 +42,7 @@ export const signup = async (req, res) => {
     data: [{ userName, email, password: hashPassword, phone: encryptedPhone, confirmEmailOTP: hashOTP, confirmEmailOTPExpires: otpExpires, gender }],
   });
 
-  //emit confirmEmail event
+
   emailEvent.emit("confirmEmail", {
     to:email,
     otp: otp,
@@ -129,7 +128,6 @@ export const refreshToken = async (req, res) => {
     data: { accessToken },
   });
 };
-//remember to implement the refresh token logic in the token.js file
 const verifyGoogle = async ({ idToken }) => {
   const client = new OAuth2Client();
   const ticket = await client.verifyIdToken({
@@ -148,7 +146,7 @@ export const socialLogin = async (req, res) => {
   }
   const user = await findOne({ model: UserModel, filter: { email } });
   if (user) {
-    // User exists, generate tokens
+    
     if (user.provider === ProviderEnum.GOOGLE) {
       const token = await getNewLoginCredentials(user);
       successResponse({
@@ -158,7 +156,6 @@ export const socialLogin = async (req, res) => {
       });
     }
   } else {
-    // User does not exist, create new user
     const newUser = await create({
       model: UserModel,
       data: [
@@ -185,17 +182,12 @@ export const logout = async (req, res) => {
 
   switch (flag) {
     case LogoutTypeEnum.LOGOUT:
-      await create({
-        model: TokenModel,
-        data: [
-          {
-            jti: req.decoded.jti,
-            userId: req.user._id,
-            expiresIn: new Date(req.decoded.exp * 1000),
-          },
-        ],
-      });
-      statusCode = 201;
+      const nowInSeconds = Math.floor(Date.now() / 1000);
+      const ttl = req.decoded.exp - nowInSeconds;
+      if(ttl > 0) {
+        await setKey({key: revokeToken({userId: req.user._id, jti: req.decoded.jti}), value: req.decoded.jti, ttl});
+      }
+      statusCode = 200;
       break;
 
     case LogoutTypeEnum.LOGOUT_ALL:
@@ -280,7 +272,7 @@ export const resetPassword = async (req, res) => {
     message: "Password reset successfully"
   });
 };
-// Api Resend otp
+
 export const resendOTP = async (req, res) => {
   const { email, type } = req.body; 
 

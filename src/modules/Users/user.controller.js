@@ -24,7 +24,6 @@ router.patch(
   localFileUpload({ customDestination: "User", validation: [...fileValidation.images, ...fileValidation.videos] }).single("attachments"),
   userServices.getProfileImage,
 );
-//profile image from cloudinary
 router.patch(
   "/upload-profile-image-cloud",
   authenticateToken({ tokenType: TokenTypeEnum.ACCESS }),

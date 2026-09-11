@@ -5,7 +5,7 @@ const corsOptions = {
     origin: function (origin, cb) {
         if (whiteList.includes(origin)) {
             cb(null, true );
-        }else if (!origin) { // postman |curl |apiDog =>null ,undefined
+        }else if (!origin) { 
             cb(null,  true );
         } else {
             cb(new Error('Not allowed by CORS'));

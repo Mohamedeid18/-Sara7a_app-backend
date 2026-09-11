@@ -32,7 +32,7 @@ export const getProfile = async (req, res) => {
     data: user,
   });
 };
-//profile image from cloudinary
+
 export const getProfileImageCloud = async (req, res, next) => {
   try {
     if (!req.file) {
@@ -112,7 +112,7 @@ export const getCoverImages = async (req, res) => {
 };
 export const updatePassword = async (req, res) => {
   const { oldPassword, newPassword } = req.body;;
-  // Check if the old password is valid
+  
   const isValidOldPassword = await compareHash({
     plainText: oldPassword,
     cipherText: req.user.password,

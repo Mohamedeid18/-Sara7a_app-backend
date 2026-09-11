@@ -1,6 +1,7 @@
 import { findById, findOne } from "../DB/database.repository.js";
 import TokenModel from "../DB/Models/token.model.js";
 import UserModel from "../DB/Models/user.model.js";
+import { getKey, revokeToken } from "../DB/redis.service.js";
 import { SignatureEnum, TokenTypeEnum, RoleEnum } from "../Utils/enums/user.enum.js";
 import { forbiddenException, notFoundException, unauthorizedException } from "../Utils/response/error.response.js";
 import { getSignature, verifyToken } from "../Utils/tokens/token.js";
@@ -22,15 +23,15 @@ export const decodeToken = async ({
         signature.accessSignature:
         signature.refreshSignature
     });
-    // check revoke  token 
-    if(await findOne({model: TokenModel, filter: {jti: decoded.jti}})) {
-      throw unauthorizedException('Token has been revoked');
+    const isRevoke = await getKey({key: revokeToken({userId: decoded.id, jti: decoded.jti})})
+    if(isRevoke) {
+      throw unauthorizedException('Token has been revoked from Redis');
     }
     const user = await findById({model: UserModel, id: decoded.id,options: {lean:true}});
     if(!user) throw notFoundException('User Not Found');
 
     if((user.changeCredentialsTime?.getTime() || 0) > decoded.iat * 1000) {
-      throw unauthorizedException('token is expired');
+      throw unauthorizedException('User credentials updated. Please log in again.');
     }
 
     return {user, decoded};

@@ -13,9 +13,8 @@ router.patch('/confirm-email', validation(authValidate.confirmEmailSchema), auth
 router.patch('/forget-password', validation(authValidate.forgetPasswordSchema), authServices.forgetPassword);
 router.patch('/reset-password', validation(authValidate.resetPasswordSchema), authServices.resetPassword);
 router.post('/refresh-token',authenticateToken({tokenType:TokenTypeEnum.REFRESH}),authServices.refreshToken);
-//remember me 
-// router.post('/remember-me', authenticateToken({tokenType: TokenTypeEnum.ACCESS}), authServices.rememberMe);
+router.post('/remember-me', authenticateToken({tokenType: TokenTypeEnum.ACCESS}), authServices.rememberMe);
 router.post('/social-login', authServices.socialLogin);
-router.post('/logout', authenticateToken({tokenType: TokenTypeEnum.ACCESS}), authServices.logout);
+router.post('/logout-with-redis', authenticateToken({tokenType: TokenTypeEnum.ACCESS}), authServices.logout);
 router.patch('/resend-otp', validation(authValidate.resendOTPSchema), authServices.resendOTP);
 export default router;
