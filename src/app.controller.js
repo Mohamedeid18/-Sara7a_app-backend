@@ -10,6 +10,7 @@ import { attachRouteWithLogger } from './Utils/loggers/morgan.loggers.js'
 import { redisConnection } from './DB/redis.connection.js'
 import { customRateLimit } from './middleware/RateLimit.middleware.js'
 
+
 export  const bootstrap = async (app,express) => {
     app.use(express.json(), cors(corsOptions()),helmet(),customRateLimit())
     await connectDB();
@@ -22,11 +23,13 @@ export  const bootstrap = async (app,express) => {
     routes.forEach(({ path, router, logFile }) => {
         attachRouteWithLogger(app, path, router, logFile)
     })
+    app.get('/',(req,res)=>{
+        return res.status(200).json({message:'Sara7aApp is run '})
+    })
     app.use("/uploads", express.static(path.resolve('./src/uploads')))
     app.use('/api/v1/auth', authRouter)
     app.use('/api/v1/user', userRouter)
     app.use('/api/v1/message', messageRouter)
-
     app.all('/*dummy', (req, res) => notFoundException('Not Found Handler!!'))
 
     app.use(globalErrorHandler);
