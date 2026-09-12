@@ -179,3 +179,8 @@
 ::1 - - [11/Sep/2026:16:47:59 +0000] "PATCH /api/v1/message/toggle-is-read/6aa42201cf857a2c99d82739 HTTP/1.1" 200 409 "-" "PostmanRuntime/7.56.1"
 ::1 - - [11/Sep/2026:16:48:02 +0000] "PATCH /api/v1/message/toggle-is-read/6aa42201cf857a2c99d82739 HTTP/1.1" 200 412 "-" "PostmanRuntime/7.56.1"
 ::1 - - [11/Sep/2026:16:48:05 +0000] "PATCH /api/v1/message/toggle-is-read/6aa42201cf857a2c99d82739 HTTP/1.1" 200 409 "-" "PostmanRuntime/7.56.1"
+::1 - - [11/Sep/2026:19:58:20 +0000] "PATCH /api/v1/message/toggle-is-favorite/6aa42201cf857a2c99d82739 HTTP/1.1" 500 1073 "-" "PostmanRuntime/7.56.1"
+::1 - - [11/Sep/2026:19:58:31 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 557 "-" "PostmanRuntime/7.56.1"
+::1 - - [11/Sep/2026:19:59:02 +0000] "PATCH /api/v1/message/toggle-is-favorite/6aa42201cf857a2c99d82739 HTTP/1.1" 200 413 "-" "PostmanRuntime/7.56.1"
+::1 - - [11/Sep/2026:19:59:10 +0000] "PATCH /api/v1/message/toggle-is-favorite/6aa42201cf857a2c99d82739 HTTP/1.1" 200 416 "-" "PostmanRuntime/7.56.1"
+::1 - - [11/Sep/2026:19:59:12 +0000] "PATCH /api/v1/message/toggle-is-favorite/6aa42201cf857a2c99d82739 HTTP/1.1" 200 413 "-" "PostmanRuntime/7.56.1"

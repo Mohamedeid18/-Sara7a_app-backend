@@ -142,7 +142,7 @@ export const socialLogin = async (req, res) => {
   const { email, email_verified, given_name, family_name, picture  } =
     await verifyGoogle({ idToken });
   if (!email_verified) {
-    throw conflictException({ message: "Email not verified" });
+    throw badRequestException({ message: "Google email is not verified" });
   }
   const user = await findOne({ model: UserModel, filter: { email } });
   if (user) {

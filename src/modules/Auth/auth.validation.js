@@ -51,3 +51,18 @@ export const resendOTPSchema = {
     type: joi.string().valid("CONFIRM_EMAIL", "FORGET_PASSWORD").required()
 })
 }
+export const socialLoginSchema = {
+    body:joi.object({
+    idToken: joi.string().required()
+})
+}
+export const logoutSchema = {
+    body:joi.object({
+    flag: joi.string().valid("LOGOUT", "LOGOUT_ALL").required()
+})
+}
+export const refreshTokenSchema = {
+    body:joi.object({
+    refreshToken: joi.string().required()
+})
+}
